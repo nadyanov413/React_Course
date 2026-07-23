@@ -5,3 +5,4 @@ dist/
 coverage/
 .vscode/
 citr-v9-project/
+src/routeTree.gen.ts

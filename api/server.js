@@ -101,7 +101,6 @@ server.get("/api/pizza-of-the-day", async function getPizzaOfTheDay(req, res) {
 });
 
 server.get("/api/orders", async function getOrders(req, res) {
-  const id = req.query.id;
   const orders = await db.all("SELECT order_id, date, time FROM orders");
 
   res.send(orders);
