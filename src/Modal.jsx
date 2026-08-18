@@ -3,14 +3,14 @@ import { createPortal } from "react-dom";
 
 const Modal = ({children}) => {
     const elRef = useRef(null);
-    if(!elRef){
+    if(!elRef.current){
         elRef.current = document.createElement("div");
-    } 
+    }
 
 
     useEffect(() => {
         const modalRoot = document.getElementById("modal");
-        modalRoot.appendChild(elRef.cuurent);
+        modalRoot.appendChild(elRef.current);
         return () => modalRoot.removeChild(elRef.current);
     }, []);
 

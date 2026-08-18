@@ -2,19 +2,29 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import getPastOders from '../api/getPastOrders';
-import getPastOrder from "../api/getPastOder";
+import getPastOrder from "../api/getPastOrder";
 import Modal from '../Modal';
 import {priceConverter} from '../useCurrency';
+import ErrorBoundary from '../ErrorBoundary';
 
 
 
 export const Route = createLazyFileRoute('/past')({
-  component: PastOrdersRoute, 
+  component: ErrorBoundaryWrappedPastOrderRoutes, 
 });
 
+function ErrorBoundaryWrappedPastOrderRoutes(props){
+  return (
+    <ErrorBoundary>
+      <PastOrdersRoute {...props}/>
+    </ErrorBoundary>
+  )
+}
+
 function PastOrdersRoute(){
+  throw new Error ("wtf");
   const [page, setPage] = useState(1);
-  const { focusedOrder, setFocusedOrder} = useState();
+  const [focusedOrder, setFocusedOrder] = useState();
   const { isLoading, data } = useQuery({
     queryKey: ['past-orders', page], 
     queryFn: () => getPastOders(page),
@@ -49,7 +59,11 @@ function PastOrdersRoute(){
       <tbody>
         {data.map((order) =>(
           <tr key={order.order_id}>
-            <td>{order.order_id}</td>
+            <td>
+              <button onClick={() => setFocusedOrder(order.order_id)}>
+              {order.order_id}
+              </button>
+            </td>
             <td>{order.date}</td>
             <td>{order.time}</td>
           </tr>
@@ -83,12 +97,20 @@ function PastOrdersRoute(){
               <tbody>
                 {pastOrderData.orderItems.map((pizza) => (
                     <tr key={`${pizza.pizzaTypeId}`}>
-                      <td></td>
+                      <td>
+                        <img src={pizza.image} alt={pizza.className}/>
+                      </td>
+                      <td> {pizza.name}</td>
+                      <td> {pizza.size}</td>
+                      <td> {pizza.quantity}</td>
+                      <td> {priceConverter(pizza.price)}</td>
+                      <td> {priceConverter(pizza.total)}</td>
                     </tr>
                 ))}
               </tbody>
             </table>
           ): <p> Loading ...</p>}
+          <button onClick={() => setFocusedOrder()}>Close</button>
         </Modal>
       ) : null
     }
